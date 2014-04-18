@@ -5,19 +5,45 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameScreen implements Screen {
 
     Trillipede game;
     Texture img;
     Texture spriteSheet;
-    TextureRegion mushroom;
+    TextureRegion mushroomFour;
+    TextureRegion mushroomThree;
+    TextureRegion mushroomTwo;
+    TextureRegion mushroomOne;
+
+    List<Mushroom> mushrooms;
 
     public GameScreen(final Trillipede game) {
         this.game = game;
         img = new Texture("badlogic.jpg");
         spriteSheet = new Texture("sheet.png");
-        mushroom = new TextureRegion(spriteSheet, 176, 440, 8, 8);
+        mushroomFour = new TextureRegion(spriteSheet, 176, 440, 8, 8);
+        mushroomThree= new TextureRegion(spriteSheet, 184, 440, 8, 8);
+        mushroomTwo = new TextureRegion(spriteSheet, 192, 440, 8, 8);
+        mushroomOne = new TextureRegion(spriteSheet, 200, 440, 8, 8);
+        mushrooms = createMushrooms();
+    }
+
+    private List<Mushroom> createMushrooms() {
+        List<Mushroom> mushrooms = new ArrayList<Mushroom>();
+        for (int i = 0; i < 100; i++) {
+            int y = MathUtils.random(0, 1080);
+            int x = MathUtils.random(0, 1920);
+            Mushroom m = new Mushroom(game, this);
+            m.x = x;
+            m.y = y;
+            mushrooms.add(m);
+        }
+        return mushrooms;
     }
 
     @Override
@@ -27,7 +53,9 @@ public class GameScreen implements Screen {
         game.batch.begin();
         game.batch.draw(spriteSheet, 0, 0);
         game.batch.draw(img, 0, 0);
-        game.batch.draw(mushroom, 0, 0);
+        for (Mushroom m: mushrooms) {
+            m.draw();
+        }
         game.batch.end();
     }
 
