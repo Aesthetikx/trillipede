@@ -23,7 +23,10 @@ public class GameScreen implements Screen {
     TextureRegion mushroomTwo;
     TextureRegion mushroomOne;
 
+    TextureRegion shipSprite;
+
     List<Mushroom> mushrooms;
+    Ship ship;
 
     private Camera camera;
 
@@ -42,6 +45,12 @@ public class GameScreen implements Screen {
         mushroomThree= new TextureRegion(spriteSheet, 184, 440, 8, 8);
         mushroomTwo = new TextureRegion(spriteSheet, 192, 440, 8, 8);
         mushroomOne = new TextureRegion(spriteSheet, 200, 440, 8, 8);
+
+        shipSprite = new TextureRegion(spriteSheet, 0, 80, 7, 8);
+
+        ship = new Ship(game, this);
+        ship.setX((WIDTH / 2) - shipSprite.getRegionWidth() / 2);
+        ship.setY(0);
         mushrooms = createMushrooms();
     }
 
@@ -80,6 +89,7 @@ public class GameScreen implements Screen {
         for (Mushroom m: mushrooms) {
             m.draw(game.batch);
         }
+        ship.draw(game.batch);
         game.batch.end();
     }
 
