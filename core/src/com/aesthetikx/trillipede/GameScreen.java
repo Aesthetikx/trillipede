@@ -10,8 +10,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Scaling;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,6 @@ import java.util.List;
 public class GameScreen implements Screen {
 
     Trillipede game;
-    Texture img;
     Texture spriteSheet;
     TextureRegion mushroomFour;
     TextureRegion mushroomThree;
@@ -29,17 +26,18 @@ public class GameScreen implements Screen {
     List<Mushroom> mushrooms;
 
     private Camera camera;
-    private Viewport viewport;
+
+    static int WIDTH = 240;
+    static int HEIGHT = 256;
 
     public GameScreen(final Trillipede game) {
         this.game = game;
 
-        camera = new OrthographicCamera(256, 256);
-        camera.position.set(128, 128, 0);
-        viewport = new FitViewport(256, 256, camera);
+        camera = new OrthographicCamera(WIDTH, HEIGHT);
+        camera.position.set(WIDTH/2, HEIGHT/2, 0);
 
-        img = new Texture("badlogic.jpg");
         spriteSheet = new Texture("sheet.png");
+
         mushroomFour = new TextureRegion(spriteSheet, 176, 440, 8, 8);
         mushroomThree= new TextureRegion(spriteSheet, 184, 440, 8, 8);
         mushroomTwo = new TextureRegion(spriteSheet, 192, 440, 8, 8);
@@ -48,21 +46,29 @@ public class GameScreen implements Screen {
     }
 
     private List<Mushroom> createMushrooms() {
+
         List<Mushroom> mushrooms = new ArrayList<Mushroom>();
-        for (int i = 0; i < 100; i++) {
-            int x = MathUtils.random(0, 256);
-            int y = MathUtils.random(0, 256);
-            Mushroom m = new Mushroom(game, this);
-            m.setX(x);
-            m.setY(y);
-            mushrooms.add(m);
+
+        int columns = WIDTH / 8;
+        int rows = (int) ((HEIGHT / 8) * .75);
+
+        for (int x = 0; x < columns; x++) {
+            for (int y = 0; y < rows; y++) {
+                if (MathUtils.random(0, 100) > 80) {
+                    Mushroom m = new Mushroom(game, this);
+                    m.setX(x * 8);
+                    m.setY(HEIGHT - (y * 8));
+                    mushrooms.add(m);
+                }
+            }
         }
+
         return mushrooms;
     }
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
@@ -71,8 +77,6 @@ public class GameScreen implements Screen {
         game.batch.setTransformMatrix(camera.view);
 
         game.batch.begin();
-        game.batch.draw(spriteSheet, 0, 0);
-        game.batch.draw(img, 0, 0);
         for (Mushroom m: mushrooms) {
             m.draw(game.batch);
         }
@@ -81,7 +85,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        Vector2 size = Scaling.fit.apply(256, 256, width, height);
+        Vector2 size = Scaling.fit.apply(WIDTH, HEIGHT, width, height);
         int viewportX = (int) (width - size.x) / 2;
         int viewportY = (int) (height - size.y) / 2;
         int viewportWidth = (int) size.x;
