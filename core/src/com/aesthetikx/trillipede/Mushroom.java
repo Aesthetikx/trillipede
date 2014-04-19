@@ -1,9 +1,10 @@
 package com.aesthetikx.trillipede;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Rectangle;
 
-public class Mushroom extends Rectangle {
+public class Mushroom extends Sprite {
 
     private int health;
     private Trillipede game;
@@ -15,7 +16,8 @@ public class Mushroom extends Rectangle {
         health = 4;
     }
 
-    public void draw() {
+    @Override
+    public void draw(Batch batch) {
         TextureRegion region;
         switch (health) {
             case 4: region = screen.mushroomFour; break;
@@ -23,7 +25,7 @@ public class Mushroom extends Rectangle {
             case 2: region = screen.mushroomTwo; break;
             default: region = screen.mushroomOne; break;
         }
-        game.batch.draw(region, x, y);
+        batch.draw(region, getX(), getY());
     }
 
 }

@@ -36,11 +36,11 @@ public class GameScreen implements Screen {
     private List<Mushroom> createMushrooms() {
         List<Mushroom> mushrooms = new ArrayList<Mushroom>();
         for (int i = 0; i < 100; i++) {
-            int y = MathUtils.random(0, 1080);
-            int x = MathUtils.random(0, 1920);
+            int x = MathUtils.random(0, 1080);
+            int y = MathUtils.random(0, 1920);
             Mushroom m = new Mushroom(game, this);
-            m.x = x;
-            m.y = y;
+            m.setX(x);
+            m.setY(y);
             mushrooms.add(m);
         }
         return mushrooms;
@@ -54,7 +54,7 @@ public class GameScreen implements Screen {
         game.batch.draw(spriteSheet, 0, 0);
         game.batch.draw(img, 0, 0);
         for (Mushroom m: mushrooms) {
-            m.draw();
+            m.draw(game.batch);
         }
         game.batch.end();
     }
