@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Scaling;
@@ -48,12 +49,15 @@ public class GameScreen implements Screen, InputProcessor {
     private boolean moving = false;
     private boolean shooting = false;
 
+    List<Body> removeList;
+
     public GameScreen(final Trillipede game) {
         this.game = game;
 
         Gdx.input.setInputProcessor(this);
 
         world = new World(new Vector2(0,0), true);
+        world.setContactListener(new LaserContactListener());
         debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(WIDTH, HEIGHT);
@@ -74,6 +78,8 @@ public class GameScreen implements Screen, InputProcessor {
         ship.setX((WIDTH / 2) - shipSprite.getRegionWidth() / 2);
         ship.setY(0);
         mushrooms = createMushrooms();
+
+        removeList = new ArrayList<Body>();
     }
 
     private List<Mushroom> createMushrooms() {
@@ -86,9 +92,7 @@ public class GameScreen implements Screen, InputProcessor {
         for (int x = 0; x < columns; x++) {
             for (int y = 0; y < rows; y++) {
                 if (MathUtils.random(0, 100) > 80) {
-                    Mushroom m = new Mushroom(game, this);
-                    m.setX(x * 8);
-                    m.setY(HEIGHT - (y * 8));
+                    Mushroom m = new Mushroom(game, this, x*8, HEIGHT -(y*8));
                     mushrooms.add(m);
                 }
             }
@@ -103,6 +107,8 @@ public class GameScreen implements Screen, InputProcessor {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camera.update();
+
+        debugRenderer.render(world, camera.combined);
 
         game.batch.setProjectionMatrix(camera.projection);
         game.batch.setTransformMatrix(camera.view);
@@ -127,6 +133,9 @@ public class GameScreen implements Screen, InputProcessor {
 
         //world.step(1/60f, 5, 5);
         world.step(delta, 6, 2);
+
+        for (Body b : removeList) world.destroyBody(b);
+        removeList.clear();
     }
 
     @Override

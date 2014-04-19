@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 
-public class Laser extends Sprite {
+public class Laser extends Sprite implements GameItem {
 
     private TextureRegion region;
     private GameScreen screen;
@@ -21,26 +21,28 @@ public class Laser extends Sprite {
         this.screen = screen;
 
         BodyDef laserDef = new BodyDef();
-        laserDef.type = BodyDef.BodyType.KinematicBody;
-        laserDef.position.set(new Vector2(x / 100.0f, y / 100.0f));
+        laserDef.type = BodyDef.BodyType.DynamicBody;
+        laserDef.position.set(new Vector2(x / 10.0f, y / 10.0f));
         laserBody = screen.world.createBody(laserDef);
         laserShape = new PolygonShape();
-        laserShape.setAsBox(.1f, .7f);
-        laserBody.createFixture(laserShape, 0.0f);
+        laserShape.setAsBox(0.05f, .35f);
+        laserBody.createFixture(laserShape, 1.0f);
 
-        laserBody.setLinearVelocity(0.0f, 2.5f);
+        laserBody.setLinearVelocity(0.0f, 25.0f);
         laserBody.setLinearDamping(0);
+        laserBody.setUserData(this);
     }
 
     @Override
     public void draw(Batch batch) {
-        float x = 100 * laserBody.getPosition().x;
-        float y = 100 * laserBody.getPosition().y;
+        //float x = 10 * laserBody.getPosition().x;
+        //float y = 10 * laserBody.getPosition().y;
+        float x = (10 * laserBody.getPosition().x) - 0.5f;
+        float y = (10 * laserBody.getPosition().y) - 3.5f;
         batch.draw(region, x, y);
 
         if (y > screen.HEIGHT) {
-            screen.world.destroyBody(laserBody);
-            screen.laser = null;
+            destroy();
         }
     }
 
@@ -53,7 +55,14 @@ public class Laser extends Sprite {
         }
     }
 
-    public void dispose() {
+    public void destroy() {
+        screen.removeList.add(laserBody);
+        screen.laser = null;
         laserShape.dispose();
+    }
+
+    @Override
+    public void collision(Object other) {
+        if (other instanceof Mushroom) destroy();
     }
 }
