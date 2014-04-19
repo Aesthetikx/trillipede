@@ -33,9 +33,9 @@ public class Ship extends Sprite {
 
     public void shoot() {
         if (screen.laser == null) {
-            Laser l = new Laser(screen);
-            l.setX(getX() + region.getRegionWidth() / 2);
-            l.setY(getY() + 3);
+            float x = getX() + region.getRegionWidth() / 2;
+            float y = getY() + 3;
+            Laser l = new Laser(screen, x, y);
             screen.laser = l;
         }
     }

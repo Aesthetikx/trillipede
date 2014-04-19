@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Scaling;
 
 import java.util.ArrayList;
@@ -26,6 +28,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     TextureRegion shipSprite;
     TextureRegion laserSprite;
+
+    World world;
+    Box2DDebugRenderer debugRenderer;
 
     List<Mushroom> mushrooms;
     Laser laser;
@@ -47,6 +52,9 @@ public class GameScreen implements Screen, InputProcessor {
         this.game = game;
 
         Gdx.input.setInputProcessor(this);
+
+        world = new World(new Vector2(0,0), true);
+        debugRenderer = new Box2DDebugRenderer();
 
         camera = new OrthographicCamera(WIDTH, HEIGHT);
         camera.position.set(WIDTH/2, HEIGHT/2, 0);
@@ -111,13 +119,14 @@ public class GameScreen implements Screen, InputProcessor {
 
         if (laser != null) {
             laser.draw(game.batch);
-            laser.translate(0, 5);
         }
 
         ship.draw(game.batch);
 
         game.batch.end();
 
+        //world.step(1/60f, 5, 5);
+        world.step(delta, 6, 2);
     }
 
     @Override
