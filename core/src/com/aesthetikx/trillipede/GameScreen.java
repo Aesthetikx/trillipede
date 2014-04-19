@@ -1,6 +1,7 @@
 package com.aesthetikx.trillipede;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,7 +15,7 @@ import com.badlogic.gdx.utils.Scaling;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GameScreen implements Screen {
+public class GameScreen implements Screen, InputProcessor {
 
     Trillipede game;
     Texture spriteSheet;
@@ -32,9 +33,16 @@ public class GameScreen implements Screen {
 
     static int WIDTH = 240;
     static int HEIGHT = 256;
+    static int FIELD_BOTTOM = HEIGHT - (int) ((HEIGHT) * .75);
+
+    private int touchX;
+    private int touchY;
+    private boolean moving = false;
 
     public GameScreen(final Trillipede game) {
         this.game = game;
+
+        Gdx.input.setInputProcessor(this);
 
         camera = new OrthographicCamera(WIDTH, HEIGHT);
         camera.position.set(WIDTH/2, HEIGHT/2, 0);
@@ -126,5 +134,57 @@ public class GameScreen implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return false;
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return false;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        Gdx.app.log("Trillipede", "touchDown");
+        moving = true;
+        touchX = screenX;
+        touchY = screenY;
+        return true;
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        Gdx.app.log("Trillipede", "touchUp");
+        moving = false;
+        return true;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        Gdx.app.log("Trillipede", "touchDrag");
+        float dx = (screenX - touchX) * .2f;
+        float dy = (screenY - touchY) * .2f;
+        ship.translate(dx, -dy);
+        touchX = screenX;
+        touchY = screenY;
+        return true;
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return false;
     }
 }
