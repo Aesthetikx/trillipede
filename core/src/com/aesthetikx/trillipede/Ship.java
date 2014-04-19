@@ -10,6 +10,8 @@ public class Ship extends Sprite {
     TextureRegion region;
     GameScreen screen;
 
+    private long lastShot = 0;
+
     public Ship(Trillipede game, GameScreen screen) {
         this.screen = screen;
         region = screen.shipSprite;
@@ -27,5 +29,14 @@ public class Ship extends Sprite {
         if (getY() + dy < 0) dy = -getY();
         if (getY() + dy > screen.FIELD_BOTTOM) dy = screen.FIELD_BOTTOM - getY();
         super.translate(dx, dy);
+    }
+
+    public void shoot() {
+        if (screen.laser == null) {
+            Laser l = new Laser(screen);
+            l.setX(getX() + region.getRegionWidth() / 2);
+            l.setY(getY() + 3);
+            screen.laser = l;
+        }
     }
 }

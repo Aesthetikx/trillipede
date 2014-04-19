@@ -25,8 +25,10 @@ public class GameScreen implements Screen, InputProcessor {
     TextureRegion mushroomOne;
 
     TextureRegion shipSprite;
+    TextureRegion laserSprite;
 
     List<Mushroom> mushrooms;
+    Laser laser;
     Ship ship;
 
     private Camera camera;
@@ -37,7 +39,9 @@ public class GameScreen implements Screen, InputProcessor {
 
     private int touchX;
     private int touchY;
+
     private boolean moving = false;
+    private boolean shooting = false;
 
     public GameScreen(final Trillipede game) {
         this.game = game;
@@ -55,6 +59,8 @@ public class GameScreen implements Screen, InputProcessor {
         mushroomOne = new TextureRegion(spriteSheet, 200, 440, 8, 8);
 
         shipSprite = new TextureRegion(spriteSheet, 0, 80, 7, 8);
+
+        laserSprite = new TextureRegion(spriteSheet, 11, 80, 1, 6);
 
         ship = new Ship(game, this);
         ship.setX((WIDTH / 2) - shipSprite.getRegionWidth() / 2);
@@ -94,11 +100,24 @@ public class GameScreen implements Screen, InputProcessor {
         game.batch.setTransformMatrix(camera.view);
 
         game.batch.begin();
+
         for (Mushroom m: mushrooms) {
             m.draw(game.batch);
         }
+
+        if (shooting) {
+            ship.shoot();
+        }
+
+        if (laser != null) {
+            laser.draw(game.batch);
+            laser.translate(0, 5);
+        }
+
         ship.draw(game.batch);
+
         game.batch.end();
+
     }
 
     @Override
@@ -153,29 +172,41 @@ public class GameScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.log("Trillipede", "touchDown");
-        moving = true;
-        touchX = screenX;
-        touchY = screenY;
-        return true;
+        if (pointer == 0) {
+            moving = true;
+            touchX = screenX;
+            touchY = screenY;
+            return true;
+        } else if (pointer == 1) {
+            shooting = true;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        Gdx.app.log("Trillipede", "touchUp");
-        moving = false;
-        return true;
+        if (pointer == 0) {
+            moving = false;
+            return true;
+        } else if (pointer == 1) {
+            shooting = false;
+            return true;
+        }
+        return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        Gdx.app.log("Trillipede", "touchDrag");
-        float dx = (screenX - touchX) * .2f;
-        float dy = (screenY - touchY) * .2f;
-        ship.translate(dx, -dy);
-        touchX = screenX;
-        touchY = screenY;
-        return true;
+        if (pointer == 0) {
+            float dx = (screenX - touchX) * .2f;
+            float dy = (screenY - touchY) * .2f;
+            ship.translate(dx, -dy);
+            touchX = screenX;
+            touchY = screenY;
+            return true;
+        }
+        return false;
     }
 
     @Override
